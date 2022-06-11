@@ -14,6 +14,9 @@ for i in range(3):
     if not os.path.exists(os.path.join(path,img[i]['name'])):
         os.makedirs(os.path.join(path,img[i]['name']))
     img[i]['index'] = len(os.listdir(os.path.join(path,img[i]['name'])))
+    
+print('1: SCISSORS, 2: ROCKS, 3: PAPERS')
+print("ESC TO EXIT!")
 #------------------------------------------------------#
 camera = cv2.VideoCapture(0)
 X1,Y1,X2,Y2 = 160,140,400,360 
@@ -32,7 +35,7 @@ while True:
     c = cv2.waitKey(1)
     if 0 <= c-49 < 3:
         i=c-49
-        print(img[i]['name'], img[i]['index'])
+        print("YOU CHOOSE:", img[i]['name'])
         print('SPACE TO START TAKE A PICTURE!')
     elif c == 32: #space
         img[i]['index']+=1
