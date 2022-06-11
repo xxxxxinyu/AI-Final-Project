@@ -27,9 +27,9 @@ while True:
     #cv2.imshow("Webcam", FrameImage) 
     cv2.rectangle(FrameImage, (X1, Y1), (X2, Y2), (0,255,0) ,1)
     hand = FrameImage[Y1:Y2, X1:X2]
-    hand = cv2.resize(hand, (256, 256))  # ROI RESIZE (配合訓練大小)
-    hand = cv2.cvtColor(hand, cv2.COLOR_BGR2GRAY) # ROI 轉灰階
-    _, output = cv2.threshold(hand, 158, 255, cv2.THRESH_BINARY) # 用來顯示
+    hand = cv2.resize(hand, (256, 256)) 
+    hand = cv2.cvtColor(hand, cv2.COLOR_BGR2GRAY) 
+    _, output = cv2.threshold(hand, 158, 255, cv2.THRESH_BINARY) 
     cv2.imshow("HAND", output)
     
     c = cv2.waitKey(1)
