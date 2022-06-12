@@ -12,7 +12,7 @@ from tensorflow.keras.models import Model, Sequential
 
 # 設個picture大小及data路徑
 pic_size = 128
-image_path = './dataset/traindata/'
+image_path = './data/'
 
 # 印出dataset中各類有幾張image
 for image_count in os.listdir(image_path):
