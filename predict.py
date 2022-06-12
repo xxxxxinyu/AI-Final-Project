@@ -23,6 +23,7 @@ cap = cv2.VideoCapture(0) # 擷取鏡頭畫面
 i = 0 # 用來記錄之後要新增的image
 wzs = 158 # 調整二值化的閥值變數
 image_q = cv2.THRESH_BINARY # 調整二值化的模式
+c1, c2, c3 = 0 # 紀錄剪刀石頭布的次數
 
 while True:
     _, FrameImage = cap.read() # 讀取鏡頭畫面
@@ -39,14 +40,31 @@ while True:
     _, output2 = cv2.threshold(SHOWROI, wzs, 255, image_q) # Black Background is better for prediction
     cv2.imshow("ROI", output2)
     
-    result = loaded_model.predict(output.reshape(1,128, 128, 1)) # 若是訓練彩色，則須把1改成3個channel (1,128,128,3) 配合model輸入的dimension
-    predict =   { '1':    result[0][0],
-                  '2':    result[0][1],    
-                  '3':    result[0][2]
+    result = loaded_model.predict(output.reshape(1, 128, 128, 1)) # 若是訓練彩色，則須把1改成3個channel (1,128,128,3) 配合model輸入的dimension
+    predict =   { 'scissors':    result[0][0],
+                  'rocks':    result[0][1],    
+                  'papers':    result[0][2]
                   }
-    print(predict)
+    
     predict = sorted(predict.items(), key=operator.itemgetter(1), reverse=True) # 分數較高者會sort至第一位
 
+    if (predict[0][0] == 'scissors'):
+      c1 += 1
+    elif (predict[0][0] == 'rocks'):
+      c2 += 1
+    elif (predict[0][0] == 'papers'):
+      c3 += 1
+
+    if (c1 == 1000):
+      print('scissors')
+      break
+    elif c2 == 1000:
+      print('rocks')
+      break
+    elif c3 == 1000:
+      print('papers')
+      break
+    
     # 在ROI上觸及英數字，來反饋效果
     interrupt = cv2.waitKey(10)
     if interrupt & 0xFF == ord('l'): # lower wzs quality
