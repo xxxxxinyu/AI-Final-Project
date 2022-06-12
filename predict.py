@@ -46,13 +46,13 @@ while True:
                   'papers':    result[0][2]
                   }
     
-    predict = sorted(predict.items(), key=operator.itemgetter(1), reverse=True) # 分數較高者會sort至第一位
+    # predict = sorted(predict.items(), key=operator.itemgetter(1), reverse=True) # 分數較高者會sort至第一位
 
-    if (predict[0][0] == 'scissors'):
+    if (result[0][0] == 1.0):
       c1 += 1
-    elif (predict[0][0] == 'rocks'):
+    elif (predict[0][1] == 1.0):
       c2 += 1
-    elif (predict[0][0] == 'papers'):
+    elif (predict[0][2] == 1.0):
       c3 += 1
 
     if (c1 == 1000):
