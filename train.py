@@ -74,6 +74,9 @@ model.compile(optimizer=Adam(lr=0.001), loss='categorical_crossentropy', metrics
 model.summary()
 history = model.fit(x_train,y_train,validation_data=(x_test,y_test),epochs=20)
 
+path = 'Result'
+if not os.path.exists(path):
+    os.makedirs(path)
 # summarize history for accuracy
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
