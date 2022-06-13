@@ -12,17 +12,12 @@ from tensorflow.keras.models import Model, Sequential
 
 # 設個picture大小及data路徑
 pic_size = 128
-image_path = './data/'
-
-# 印出dataset中各類有幾張image
-for image_count in os.listdir(image_path):
-    print(str(len(os.listdir(image_path + image_count))) + " " + image_count + " images")
+image_path = 'data/'
 
 # 記錄總共有幾張image
 file_count = 0
 for floderName in os.listdir(image_path):
-    for filename in os.listdir(image_path + floderName):
-        file_count +=1
+        file_count +=len(os.listdir(image_path+floderName))
 print('all_image_file: ',file_count)
 
 # 建立空的np_array (待會填label用)
