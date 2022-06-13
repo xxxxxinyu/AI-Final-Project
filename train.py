@@ -72,7 +72,28 @@ model = Sequential([
 
 model.compile(optimizer=Adam(lr=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
 model.summary()
-model.fit(x_train,y_train,validation_data=(x_test,y_test),epochs=20)
+history = model.fit(x_train,y_train,validation_data=(x_test,y_test),epochs=20)
+
+# summarize history for accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.savefig("./Result/accuracy.png")
+plt.show()
+plt.close()
+# summarize history for loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.savefig("./Result/loss.png")
+plt.show()
+plt.close()
 
 # 將訓練好的model儲存成json及h5檔
 import json
