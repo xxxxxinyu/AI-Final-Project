@@ -1,6 +1,5 @@
 import cv2
 import json
-import time
 from tensorflow.keras.models import load_model
 from tensorflow.keras.models import model_from_json
 
@@ -31,44 +30,43 @@ def run(hand_image, s, r, p, other):
         other += 1
 
     if s == 5:
-      res = 'scissors'
+      res = 'Scissors'
     elif r == 5:
-      res = 'rocks'
+      res = 'Rocks'
     elif p == 5:
-      res = 'papers'
+      res = 'Papers'
     elif other == 5:
         res = 'Other'
     return res,s,r,p,other
       
-#main
+def game():
+    camera = cv2.VideoCapture(0)
+    wzs = 158
+    X1,Y1,X2,Y2 = 160,140,400,360 
+    image_q = cv2.THRESH_BINARY
+    s, r, p, other = 0, 0, 0, 0
 
-camera = cv2.VideoCapture(0)
-wzs = 158
-X1,Y1,X2,Y2 = 160,140,400,360 
-image_q = cv2.THRESH_BINARY
-s, r, p, other = 0, 0, 0, 0
-
-while True:
-    _, FrameImage = camera.read()
-    FrameImage = cv2.flip(FrameImage, 1) 
-    cv2.rectangle(FrameImage, (X1, Y1), (X2, Y2), (0,255,0) ,1)
-    INPUT = FrameImage[Y1:Y2, X1:X2]
-    INPUT = cv2.resize(INPUT, (128, 128)) 
-    INPUT = cv2.cvtColor(INPUT, cv2.COLOR_BGR2GRAY)
-    _, output = cv2.threshold(INPUT, wzs, 255, image_q)
-    SHOW = cv2.resize(INPUT, (256, 256))
-    _, output2 = cv2.threshold(SHOW, wzs, 255, image_q)
-    cv2.imshow("HAND", output2)
-    
-    k = cv2.waitKey(10)
-    res,s,r,p,other = run(output,s,r,p,other)
-    if res != 'no_sign':
-        print(res)
-        s, r, p, other = 0, 0, 0, 0 #restart
-        #time.sleep(3)
+    while True:
+        _, FrameImage = camera.read()
+        FrameImage = cv2.flip(FrameImage, 1) 
+        cv2.rectangle(FrameImage, (X1, Y1), (X2, Y2), (0,255,0) ,1)
+        INPUT = FrameImage[Y1:Y2, X1:X2]
+        INPUT = cv2.resize(INPUT, (128, 128)) 
+        INPUT = cv2.cvtColor(INPUT, cv2.COLOR_BGR2GRAY)
+        _, output = cv2.threshold(INPUT, wzs, 255, image_q)
+        SHOW = cv2.resize(INPUT, (256, 256))
+        _, output2 = cv2.threshold(SHOW, wzs, 255, image_q)
+        cv2.imshow("HAND", output2)
         
-    if k == 27: # esc
-        break
-    
-camera.release()
-cv2.destroyAllWindows()
+        k = cv2.waitKey(10)
+        res,s,r,p,other = run(output,s,r,p,other)
+        if res != 'no_sign':
+            print(res)
+            s, r, p, other = 0, 0, 0, 0 #restart
+            #time.sleep(3)
+            
+        if k == 27: # esc
+            break
+        
+    camera.release()
+    cv2.destroyAllWindows()
