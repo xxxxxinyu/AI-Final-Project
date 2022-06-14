@@ -1,12 +1,10 @@
 import sys
 import pygame
 import cv2
-import numpy as np
 from pygame.locals import QUIT
 import random
 import bisect
 import json
-from tensorflow.keras.models import load_model
 from tensorflow.keras.models import model_from_json
 
 BLACK = (0, 0, 0)
@@ -325,7 +323,7 @@ class RPS(Game):
         
     def show_end(self):
         self.show_overlay()
-        self.show_text('你的成績：'+('%.2f'%self.timer), WHITE, 50, self.height-10, 100)
+        self.show_text('你的成績：'+('%.2f'%self.timer)+' s', WHITE, 50, self.height-10, 100)
         self.show_grade('rps.txt', ('%.2f'%self.timer))
         self.again_rect = self.draw_rect(240, 50, 480, 400, WHITE)
         self.show_text("重新開始", WHITE, 35, 480, 400)

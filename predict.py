@@ -1,7 +1,5 @@
 import cv2
 import json
-import time
-from tensorflow.keras.models import load_model
 from tensorflow.keras.models import model_from_json
 
 # 讀訓練好的model

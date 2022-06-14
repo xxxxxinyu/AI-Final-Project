@@ -1,17 +1,60 @@
-from tensorflow.keras.layers import *
-from tensorflow.keras.models import Model, Sequential
+from keras.layers import Dense, Input, Dropout, GlobalAveragePooling2D, Flatten, Conv2D, BatchNormalization, Activation, MaxPooling2D
+from keras.models import Model, Sequential
+from keras.optimizers import Adam
 import visualkeras
 
-model = Sequential([
-    Conv2D(64, 3, activation='relu', input_shape=(128,128,1)),
-    MaxPooling2D(pool_size=(2, 2)),
-    Conv2D(32, 3, activation='relu'),
-    MaxPooling2D(pool_size=(2, 2)),
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dropout(0.5),
-    
-    Dense(3, activation='softmax')
-])
+# number of possible label values
+nb_classes = 7
 
-visualkeras.layered_view(model, legend=True, to_file='architecture.png')
+# Initialising the CNN
+model = Sequential()
+
+# 1 - Convolution
+model.add(Conv2D(64,(3,3), padding='same', input_shape=(48, 48,1)))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+# 2nd Convolution layer
+model.add(Conv2D(128,(5,5), padding='same'))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+# 3rd Convolution layer
+model.add(Conv2D(512,(3,3), padding='same'))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+# 4th Convolution layer
+model.add(Conv2D(512,(3,3), padding='same'))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+# Flattening
+model.add(Flatten())
+
+# Fully connected layer 1st layer
+model.add(Dense(256))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.25))
+
+# Fully connected layer 2nd layer
+model.add(Dense(512))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.25))
+
+model.add(Dense(nb_classes, activation='softmax'))
+
+opt = Adam(lr=0.0001)
+model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
+
+visualkeras.layered_view(model, legend=True, to_file='architecture_ref.png')
