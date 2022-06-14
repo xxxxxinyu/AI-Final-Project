@@ -17,81 +17,17 @@ YELLOW = (209, 181, 21)
 QUESTION_NUM = 30
 COUNTDOWN = 3
 
-class Game:
-    def __init__(self, width, height, title):
-        self.width = width
-        self.height = height
-        self.window = self.set_window(title)
-
-        self.start_rect = None
-        self.again_rect = None
-
-        self.start_clicked = False
-        self.again_clicked = False
-        self.is_get_ques = False
-        self.ques_num = 0
-        self.update_ques = True
-        self.is_correct = False
-
-        self.clock = pygame.time.Clock()
-        pygame.time.set_timer(pygame.USEREVENT, 1000)
-        self.counter, self.counterText = COUNTDOWN, str(COUNTDOWN)
-
-        self.start = -1
-        self.timer = -1
-
-        self.key = None
-        self.state = 'initial'
-        self.last = -1
-        self.cooldown = 500
-        self.images = {}
-
+class Camera:
+    def __init__(self, wzs=158):
         self.cap = self.set_camera()
-        self.pic = None
-        self.bg = self.load_bg()
+        self.wzs = wzs
 
-        self.grades = []
-        self.is_exec = False
-        self.rank = -1
+    def set_wzs(self, cmd):
+        if cmd == 'down' and self.wzs < 255:
+            self.wzs += 5
+        elif cmd == 'up' and self.wzs > 0:
+            self.wzs -= 5
 
-    def reset(self):
-        self.again_clicked = False
-        self.is_get_ques = False
-        self.ques_num = 0
-        self.update_ques = True
-        self.is_correct = False
-        self.counter, self.counterText = COUNTDOWN, str(COUNTDOWN)
-
-        self.start = -1
-        self.timer = -1
-
-        self.key = None
-        self.state = 'main'
-        self.last = -1
-
-        self.pic = None
-        self.grades = []
-        self.is_exec = False
-        self.rank = -1
-
-    def set_window(self, title):
-        pygame.init()
-        pygame.display.set_caption(title)
-        return pygame.display.set_mode((self.width, self.height))
-
-    def load_bg(self):
-        bg = pygame.image.load("assets/images/bg.jpg")
-        bg = pygame.transform.scale(bg, (self.width/2, self.height))
-        return bg
-
-    def show_bg(self):
-        self.window.blit(self.bg, (0, 0))
-    
-    def show_overlay(self):
-        overlay = pygame.Surface((self.width, self.height))
-        overlay.fill((0, 0, 0))
-        overlay.set_alpha(160)
-        self.window.blit(overlay, (0, 0))
 
     def set_camera(self):
         #0 Is the built in camera
@@ -117,14 +53,84 @@ class Game:
         frame = cv2.resize(frame, (128, 128))
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) ##
         image_q = cv2.THRESH_BINARY ##
-        _, pic = cv2.threshold(frame, 158, 255, image_q) ##
+        _, pic = cv2.threshold(frame, self.wzs, 255, image_q) ##
 
         frame = cv2.resize(frame, (480, 480)) ##
-        _, output = cv2.threshold(frame, 158, 255, image_q) ##
-        output = cv2.transpose(output)
-        surf = pygame.surfarray.make_surface(output)
-        self.window.blit(surf, (self.height, 0))
-        return True, pic
+        frame = cv2.transpose(frame)
+        _, output = cv2.threshold(frame, self.wzs, 255, image_q) 
+        return True, pic,output  
+
+class Game:
+    def __init__(self, width, height, title):
+        self.width = width
+        self.height = height
+        self.window = self.set_window(title)
+
+        self.start_rect = None
+        self.again_rect = None
+
+        self.start_clicked = False
+        self.again_clicked = False
+        self.is_get_ques = False
+        self.ques_num = 0
+        self.update_ques = True
+        self.is_correct = False
+
+        self.clock = pygame.time.Clock()
+        pygame.time.set_timer(pygame.USEREVENT, 1000)
+        self.counter, self.counterText = COUNTDOWN, str(COUNTDOWN)
+
+        self.start = -1
+        self.timer = -1
+
+        self.state = 'initial'
+        self.last = -1
+        self.cooldown = 500
+        self.images = {}
+
+        self.cam = Camera()
+        self.bg = self.load_bg()
+
+        self.grades = []
+        self.is_exec = False
+        self.rank = -1
+
+    def reset(self):
+        self.again_clicked = False
+        self.is_get_ques = False
+        self.ques_num = 0
+        self.update_ques = True
+        self.is_correct = False
+        self.counter, self.counterText = COUNTDOWN, str(COUNTDOWN)
+
+        self.start = -1
+        self.timer = -1
+
+        self.state = 'main'
+        self.last = -1
+
+        self.grades = []
+        self.is_exec = False
+        self.rank = -1
+
+    def set_window(self, title):
+        pygame.init()
+        pygame.display.set_caption(title)
+        return pygame.display.set_mode((self.width, self.height))
+
+    def load_bg(self):
+        bg = pygame.image.load("assets/images/bg.jpg")
+        bg = pygame.transform.scale(bg, (self.width/2, self.height))
+        return bg
+
+    def show_bg(self):
+        self.window.blit(self.bg, (0, 0))
+    
+    def show_overlay(self):
+        overlay = pygame.Surface((self.width, self.height))
+        overlay.fill((0, 0, 0))
+        overlay.set_alpha(160)
+        self.window.blit(overlay, (0, 0))
 
     def show_text(self, content, color, size, x, y, pos='center'):
         style = pygame.font.Font('assets/fonts/cubic.ttf', size)
@@ -226,8 +232,9 @@ class RPS(Game):
         self.show_text("反應力測試", BLACK, 50, 230, 200)
         self.show_text("開始遊戲", BLACK, 35, 230, 300)
         pygame.draw.line(self.window, BLACK, [80, 240], [380, 240], width=4)
-        self.show_text("請讓手掌完整顯示", GRAY, 30, 730, 80)
-        pygame.draw.line(self.window, GRAY, [580, 105], [880, 105], width=4)
+        self.show_text("請讓手掌完整顯示", GRAY, 30, 730, 40)
+        self.show_text("可使用上下鍵調整畫面", GRAY, 30, 730, 80)
+        pygame.draw.line(self.window, GRAY, [560, 105], [900, 105], width=4)
 
     def show_countdown(self):
         self.show_text("請根據指示出拳", BLACK, 30, 230, 80)
@@ -315,7 +322,6 @@ class RPS(Game):
                 self.is_correct = False
                 self.is_get_ques = False
                 self.ans = None
-                self.key = None   
         
     def show_end(self):
         self.show_overlay()
@@ -333,7 +339,10 @@ def main():
     ans = None
     while True:
         game.clock.tick(60)
-        sucess, pic = game.show_camera()
+        sucess, pic, show = game.cam.show_camera()
+        surf = pygame.surfarray.make_surface(show)
+        game.window.blit(surf, (game.height, 0))
+
         ans = game.show_predict(pic, ans)
         if not sucess:
             game.state = 'error'
@@ -343,6 +352,7 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 sys.exit()
+            
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if game.state == 'initial':
@@ -353,7 +363,10 @@ def main():
                         game.again_clicked = True
 
             if event.type == pygame.KEYDOWN:
-                game.key = event.key
+                if event.key == pygame.K_UP:
+                    game.cam.set_wzs('up')
+                if event.key == pygame.K_DOWN:
+                    game.cam.set_wzs('down')
 
             if event.type == pygame.USEREVENT and game.start_clicked and game.counter > 0: 
                 game.counter -= 1
